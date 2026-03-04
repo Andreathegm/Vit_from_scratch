@@ -1,1 +1,4 @@
 data/
+.vscode*
+__*__
+test.py
