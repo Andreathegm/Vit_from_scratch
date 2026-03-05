@@ -2,46 +2,43 @@ import torch
 import torch.nn as nn
 
 class PatchEmbedding(nn.Module):
-    def __init__(self, in_channels=3, patch_size=16, embed_dim=768):
+    def __init__(self, img_size = 224,in_channels=3, patch_size=16, embed_dim=768):
         super().__init__()
+
         self.patch_size = patch_size
-        
-        # La dimensione del vettore appiattito sarà: Canali * P * P
-        # Per un'immagine RGB (3 canali) con patch 16x16, sarà 3 * 16 * 16 = 768
+        self.num_patches = (img_size // patch_size) ** 2
         self.patch_dim = in_channels * patch_size * patch_size
-        
-        # Il layer lineare che sostituisce Conv2d
         self.proj = nn.Linear(self.patch_dim, embed_dim)
+        self.cls_token = nn.Parameter(torch.randn(1,1,embed_dim))
+        self.positional_embedding = nn.Parameter(torch.randn(1,self.num_patches+1,embed_dim))
 
     def forward(self, x):
         print("1. Input tensor shape (B, C, H, W):", x.shape)
         
         B, C, H, W = x.shape
         P = self.patch_size
+                        
         
-        # Assicuriamoci che l'immagine sia divisibile in patch esatte
-        assert H % P == 0 and W % P == 0, "Dimensioni immagine non divisibili per patch_size"
-                
-        num_patches_h = H // P
-        num_patches_w = W // P
-        
-        # 1 & 2. CREAZIONE DELLE PATCH
-        # Rimodelliamo per isolare i blocchi PxP
-        x = x.view(B, C, num_patches_h, P, num_patches_w, P)
-        
-        # Scambiamo le dimensioni per avere: (Batch, Griglia_H, Griglia_W, Canali, Patch_H, Patch_W)
+        x = x.reshape(B, C, H // P, P, W // P, P)
+        print("1.1 after reshaping",x.shape)
+
+        # ---> (B,num_patches_h,num_patches_w,C,P,P)
         x = x.permute(0, 2, 4, 1, 3, 5)
         print("2. Dopo l'estrazione delle patch (B, Grid_H, Grid_W, C, P, P):", x.shape)
         
         # 3. FLATTEN
-        # Combiniamo le griglie H e W nella sequenza N (numero totale di patch)
-        # Combiniamo i canali e i pixel PxP nel singolo vettore patch_dim
-        x = x.contiguous().view(B, num_patches_h * num_patches_w, self.patch_dim)
+        x = x.reshape(B,self.num_patches, -1)
         print("3. Dopo il flatten (B, N, C*P*P):", x.shape)
         
         # 4. LINEAR PROJECTION
         x = self.proj(x)
         print("4. Dopo Linear Projection (B, N, D):", x.shape)
+
+        cls = self.cls_token.expand(B,-1,-1)
+        x = torch.cat([cls,x],dim=1)
+        print("Dopo aver messo il cls: ",x.shape)
+        x = x + self.positional_embedding
+
         
         return x
 
