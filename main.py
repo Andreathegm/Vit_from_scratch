@@ -21,7 +21,7 @@ from utils.wandb_logger import (
 )
 from train import train_one_epoch, evaluate
 from config.config import Hyperparams as Hp
-from data.dataset import ImageDataset, TransformDataset, get_transforms
+from dataset import ImageDataset, TransformDataset, get_transforms
 from models.vit import VisionTransformer
 
 
@@ -68,21 +68,21 @@ def build_dataloaders(img_size: int, batch_size: int):
         train_ds,
         batch_size=batch_size,
         shuffle=True,
-        num_workers=4,       # 4 worker per non fare aspettare la GPU
+        num_workers=6,       # 4 worker per non fare aspettare la GPU
         pin_memory=True
     )
     val_loader = DataLoader(
         val_ds,
         batch_size=batch_size,
         shuffle=False,
-        num_workers=4,
+        num_workers=6,
         pin_memory=True
     )
     test_loader = DataLoader(
         test_ds,
         batch_size=batch_size,
         shuffle=False,
-        num_workers=4,
+        num_workers=6,
         pin_memory=True
     )
 

@@ -22,7 +22,7 @@ def train_one_epoch(model , loader , optimizer, criterion, epoch: int, device) -
     return running_loss / len(loader)
 
 @torch.inference_mode()
-def evaluate(model, loader, criterion,device):
+def evaluate(model, loader, criterion,device,split = ""):
     model.eval()
     total_loss = 0.0
     total_acc = 0.0
@@ -35,7 +35,13 @@ def evaluate(model, loader, criterion,device):
         total_loss += loss.item()
         total_acc += accuracy(logits, y)
 
-    return total_loss / len(loader), total_acc / len(loader)
+    avg_loss = total_loss / len(loader)
+    avg_acc  = total_acc  / len(loader)
+
+    print(f"[{split}] Loss: {avg_loss:.4f}  Acc: {avg_acc*100:.2f}%")
+
+    return avg_loss, avg_acc
+
 
 def accuracy(logits, targets) -> float:
     preds = logits.argmax(dim=1)

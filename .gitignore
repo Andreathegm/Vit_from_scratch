@@ -3,3 +3,4 @@ data/
 __*__
 test.py
 .env
+wandb/*

@@ -21,7 +21,7 @@ class VisionTransformer(nn.Module):
         representation_size = None,
     ):
         super().__init__()
-        self.patch_embed = PatchEmbedding(img_size = 224,in_channels=3, patch_size=16, embed_dim=768)
+        self.patch_embed = PatchEmbedding(img_size = img_size,in_channels=in_chans, patch_size=patch_size, embed_dim=embed_dim)
         self.pos_drop = nn.Dropout(dropout)
         self.blocks = nn.ModuleList([
             TrasformerEncoderBlock(embed_dim, num_heads, mlp_ratio, attn_dropout=attn_dropout, dropout=dropout)
