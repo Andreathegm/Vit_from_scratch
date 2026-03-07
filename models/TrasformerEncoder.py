@@ -18,10 +18,3 @@ class TrasformerEncoderBlock(nn.Module):
         y = self.mlp(self.norm2(x))
         x = x + y
         return x, attn
-
-blk = TrasformerEncoderBlock(embed_dim=768, num_heads=12, mlp_ratio=4.0, dropout=0.0)
-x = torch.randn(64, 197, 768)
-with torch.no_grad():
-    y, a = blk(x)
-print("EncoderBlock out:", y.shape)
-print("EncoderBlock attn:", a.shape)

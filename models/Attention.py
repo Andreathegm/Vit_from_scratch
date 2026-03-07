@@ -21,14 +21,14 @@ class ScaledDotProductAttention(nn.Module):
         out = attn @ v  # weighted sum of values
         return out, attn
 
-attn_layer = ScaledDotProductAttention(dropout=0.0)
-q = torch.randn(64, 12, 197, 64)
-k = torch.randn(64, 12, 197, 64)
-v = torch.randn(64, 12, 197, 64)
-with torch.inference_mode():
-    out, attn = attn_layer(q, k, v)
-print("ScaledDotProductAttention out:", out.shape)
-print("ScaledDotProductAttention attn:", attn.shape)
+# attn_layer = ScaledDotProductAttention(dropout=0.0)
+# q = torch.randn(64, 12, 197, 64)
+# k = torch.randn(64, 12, 197, 64)
+# v = torch.randn(64, 12, 197, 64)
+# with torch.inference_mode():
+#     out, attn = attn_layer(q, k, v)
+# print("ScaledDotProductAttention out:", out.shape)
+# print("ScaledDotProductAttention attn:", attn.shape)
 
 
 class MultiHeadSelfAttention(nn.Module):
@@ -68,9 +68,9 @@ class MultiHeadSelfAttention(nn.Module):
         out = self.proj_dropout(out)
         return out, attn
 
-mhsa = MultiHeadSelfAttention(embed_dim=768, num_heads=12)
-x = torch.randn(64, 197, 768)
-with torch.inference_mode():
-    y, a = mhsa(x)
-print("MultiHeadSelfAttention out:", y.shape)
-print("MultiHeadSelfAttention attn:", a.shape)
+# mhsa = MultiHeadSelfAttention(embed_dim=768, num_heads=12)
+# x = torch.randn(64, 197, 768)
+# with torch.inference_mode():
+#     y, a = mhsa(x)
+# print("MultiHeadSelfAttention out:", y.shape)
+# print("MultiHeadSelfAttention attn:", a.shape)

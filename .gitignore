@@ -2,3 +2,4 @@ data/
 .vscode*
 __*__
 test.py
+.env

@@ -46,9 +46,3 @@ class VisionTransformer(nn.Module):
         if return_attn:
             return logits, attn_maps
         return logits
-
-#vit = VisionTransformer(img_size=img_size, patch_size=patch_size, num_classes=10).to(device)
-#xb, _ = next(iter(train_loader))
-#with torch.no_grad():
-    #logits = vit(xb.to(device))
-#print("VisionTransformer logits:", logits.shape)
