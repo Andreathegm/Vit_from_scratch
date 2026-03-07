@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
-from Attention import MultiHeadSelfAttention
-from MLP import MLP
+from models.Attention import MultiHeadSelfAttention
+from models.MLP import MLP
 
 class TrasformerEncoderBlock(nn.Module):
     def __init__(self, embed_dim: int, num_heads: int, mlp_ratio: float = 4.0,

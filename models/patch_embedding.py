@@ -18,7 +18,9 @@ class PatchEmbedding(nn.Module):
         B, C, H, W = x.shape
         P = self.patch_size
                         
-        
+        print(P)
+        print( H//P)
+        print(W//P)
         x = x.reshape(B, C, H // P, P, W // P, P)
         print("1.1 after reshaping",x.shape)
 

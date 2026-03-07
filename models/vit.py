@@ -1,8 +1,8 @@
 import torch
-import torch as nn
-from patch_embedding import PatchEmbedding
-from TrasformerEncoder import TrasformerEncoderBlock
-from MLP import MLPHead
+import torch.nn as nn
+from models.patch_embedding import PatchEmbedding
+from models.TrasformerEncoder import TrasformerEncoderBlock
+from models.MLP import MLPHead
 
 
 class VisionTransformer(nn.Module):
@@ -21,7 +21,7 @@ class VisionTransformer(nn.Module):
         representation_size = None,
     ):
         super().__init__()
-        self.patch_embed = PatchEmbedding(img_size, patch_size, in_chans, embed_dim)
+        self.patch_embed = PatchEmbedding(img_size = 224,in_channels=3, patch_size=16, embed_dim=768)
         self.pos_drop = nn.Dropout(dropout)
         self.blocks = nn.ModuleList([
             TrasformerEncoderBlock(embed_dim, num_heads, mlp_ratio, attn_dropout=attn_dropout, dropout=dropout)
@@ -47,8 +47,8 @@ class VisionTransformer(nn.Module):
             return logits, attn_maps
         return logits
 
-vit = VisionTransformer(img_size=img_size, patch_size=patch_size, num_classes=10).to(device)
-xb, _ = next(iter(train_loader))
-with torch.no_grad():
-    logits = vit(xb.to(device))
-print("VisionTransformer logits:", logits.shape)
+#vit = VisionTransformer(img_size=img_size, patch_size=patch_size, num_classes=10).to(device)
+#xb, _ = next(iter(train_loader))
+#with torch.no_grad():
+    #logits = vit(xb.to(device))
+#print("VisionTransformer logits:", logits.shape)
