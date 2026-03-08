@@ -1,0 +1,25 @@
+# Configuration for ViT-Tiny Training
+model:
+  name: "ViT-Tiny"
+  embed_dim: 192
+  depth: 12
+  num_heads: 3
+  mlp_ratio: 4.0
+  dropout: 0.1
+  img_size: 224     
+  patch_size: 16     
+
+training:
+  run_name: "vit-fine-tune"
+  epochs: 100        
+  warmup_epochs: 10  
+  batch_size: 128    
+  weight_decay: 0.05
+  label_smoothing: 0.1
+  scheduler: "cosine"
+  augmentation: "upresize&randomcrop+RandAugm+mask"
+  weights_path: "checkpoints/vit-pretrain/best.pt"
+
+dataset:
+  name: "ImageNet-100"
+  num_classes: 100

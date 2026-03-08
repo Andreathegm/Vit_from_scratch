@@ -13,3 +13,11 @@ def _load(file_name):
 
 # instantiate a global variable
 Hyperparams = _load("config/hyperparameters.yaml")
+
+def load_run_args(file_name):
+    try:
+        with open(file_name, "r") as f:
+            return yaml.safe_load(f)
+        
+    except Exception as e:
+        raise RuntimeError(f"Impossible to load the conf. file {e}")

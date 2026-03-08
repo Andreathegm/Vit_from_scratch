@@ -4,3 +4,5 @@ __*__
 test.py
 .env
 wandb/*
+checkpoints/*
+plots/*

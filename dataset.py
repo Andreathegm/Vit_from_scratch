@@ -93,12 +93,12 @@ def get_transforms(img_size: int, dataset_partition: str):
                 T.Resize(resize_size),
                 T.RandomCrop(img_size),
                 T.RandomHorizontalFlip(),
-                T.ColorJitter(
-                    brightness=0.4,
-                    contrast=0.4,
-                    saturation=0.4,
-                    hue=0.1
-                ),
+                # T.ColorJitter(
+                #     brightness=0.4,
+                #     contrast=0.4,
+                #     saturation=0.4,
+                #     hue=0.1
+                # ),
                 # RandAugment — DeiT paper, Touvron et al. 2021
                 # num_ops=2: applica 2 trasformazioni casuali per immagine
                 # magnitude=9: intensità delle trasformazioni
@@ -111,7 +111,8 @@ def get_transforms(img_size: int, dataset_partition: str):
                 # RandomErasing — cancella patch casuali dell'immagine
                 # forza il modello a non dipendere da zone specifiche
                 # Zhong et al. 2020 "Random Erasing Data Augmentation"
-                T.RandomErasing(p=0.25, scale=(0.02, 0.33)),
+                ## prima ho fatto con 0.33 
+                T.RandomErasing(p=0.25, scale=(0.02, 0.10)),
             ])
 
         case "val" | "test":
