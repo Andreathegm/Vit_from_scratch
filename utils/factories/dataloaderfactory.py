@@ -45,21 +45,27 @@ def build_dataloaders(img_size: int, batch_size: int):
         batch_size=batch_size,
         shuffle=True,
         num_workers=6,       # 4 worker per non fare aspettare la GPU
-        pin_memory=True
+        pin_memory=True,
+        persistent_workers=True,  # evita di ricreare i worker ad ogni epoca
+        prefetch_factor=2         # ogni worker prepara 2 batch in anticipo
     )
     val_loader = DataLoader(
         val_ds,
         batch_size=batch_size,
         shuffle=False,
         num_workers=6,
-        pin_memory=True
+        pin_memory=True,
+        persistent_workers=True,  # evita di ricreare i worker ad ogni epoca
+        prefetch_factor=2  
     )
     test_loader = DataLoader(
         test_ds,
         batch_size=batch_size,
         shuffle=False,
         num_workers=6,
-        pin_memory=True
+        pin_memory=True,
+        persistent_workers=True,  # evita di ricreare i worker ad ogni epoca
+        prefetch_factor=2  
     )
 
     return train_loader, val_loader, test_loader

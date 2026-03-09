@@ -15,7 +15,7 @@ training:
   run_name: "vit-fine-tune"
   epochs: 100        
   lr : !!float 3e-04 
-  batch_size: 128    
+  batch_size: 96   
   weight_decay: 0.05
   label_smoothing: 0.1
   scheduler: "cosine"

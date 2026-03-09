@@ -172,10 +172,17 @@ def main():
     session.load_optimizer_state(config.training.weights_path, new_lr = config.training.lr)
     print(session)
     train_loader,val_loader,test_loader = build_dataloaders(config.model.img_size,config.training.batch_size)
-    print(train_loader,val_loader,test_loader)
-    return
-    session.test_checkpoint(test_loader=test_loader)
-    return
+    # print(train_loader,val_loader,test_loader)
+    # print(next(session.model.parameters()).device)
+    # x, y = next(iter(train_loader))
+    # print(x.shape)   # (batch_size, 3, 224, 224)
+    # print(y.shape)   # (batch_size,)
+        # train deve avere RandAugment, RandomErasing ecc
+    # val/test deve essere solo Resize + CenterCrop + Normalize
+    # print(train_loader.dataset.transform)
+    # print(val_loader.dataset.transform)
+    # print(vars(test_loader.dataset))
+    # return
     session.train_and_test(train_loader=train_loader, val_loader=val_loader,test_loader=test_loader)
 
 if __name__ == "__main__":

@@ -55,6 +55,7 @@ class TrainSession:
         return (
             f"TrainSession\n"
             f"{'─' * 40}\n"
+            f"{self.config.to_dict()}"
             f"  run name:        {self.run_name}\n"
             f"  epochs:          {self.epochs}\n"
             f"  device:          {self.device}\n"
