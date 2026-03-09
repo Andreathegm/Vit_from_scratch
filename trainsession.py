@@ -23,8 +23,6 @@ class TrainSession:
         run_name,
         epochs,        
         device,
-        checkpoint_last,
-        checkpoint_best,
         weights_path
     ):
         self.model           = model
@@ -35,11 +33,49 @@ class TrainSession:
         self.run_name        = run_name
         self.epochs          = epochs
         self.device          = device
-        self.checkpoint_last = f"checkpoints/{self.run_name}/last.pt",
+        self.checkpoint_last = f"checkpoints/{self.run_name}/last.pt"
         self.checkpoint_best = f"checkpoints/{self.run_name}/best.pt"
 
         if weights_path is not None:
             self.load_weights(weights_path)
+            self.weights_path = weights_path
+        else:
+            self.weights_path = None
+    
+    def __str__(self) -> str:
+        """Returns a human-readable summary of the training session."""
+        
+        total_params = sum(p.numel() for p in self.model.parameters()) / 1e6
+        current_lr   = self.optimizer.param_groups[0]["lr"]
+        weight_decay = self.optimizer.param_groups[0]["weight_decay"]
+        if self.weights_path is not None :
+            w_path = self.weights_path
+        else:
+            w_path = "-"
+        return (
+            f"TrainSession\n"
+            f"{'─' * 40}\n"
+            f"  run name:        {self.run_name}\n"
+            f"  epochs:          {self.epochs}\n"
+            f"  device:          {self.device}\n"
+            f"\n"
+            f"  model:           {self.model.__class__.__name__}\n"
+            f"  parameters:      {total_params:.2f}M\n"
+            f"\n"
+            f"  optimizer:       {self.optimizer.__class__.__name__}\n"
+            f"  lr:              {current_lr:.2e}\n"
+            f"  weight decay:    {weight_decay}\n"
+            f"\n"
+            f"  scheduler:       {self.scheduler.__class__.__name__}\n"
+            f"  criterion:       {self.criterion.__class__.__name__}\n"
+            f"\n"
+            f"  checkpoint last: {self.checkpoint_last}\n"
+            f"  checkpoint best: {self.checkpoint_best}\n"
+            f"  weights from {w_path}"
+        )
+
+
+        
 
     # ──────────────────────────────────────────
     # Checkpoint
@@ -122,8 +158,9 @@ class TrainSession:
 
         if new_lr is not None:
             for group in self.optimizer.param_groups:
+                old_lr = group["lr"]
                 group["lr"] = new_lr
-            print(f"Optimizer state loaded — lr overridden to {new_lr}")
+            print(f"Optimizer state loaded — old_lr = {old_lr} overridden to {new_lr}")
         else:
             print("Optimizer state loaded — lr unchanged")
 
@@ -247,3 +284,13 @@ class TrainSession:
         print(f"Test Loss: {test_loss:.4f}")
         print(f"Test Acc:  {test_acc*100:.2f}%")
         log_test(test_acc, test_loss)
+
+    def test_checkpoint(self,test_loader):
+        print("Testing preloaded weights on test set...")
+
+        test_loss, test_acc = evaluate(
+            self.model, test_loader, self.criterion,
+            self.device, split="Test"
+        )
+        print(f"Test Loss: {test_loss:.4f}")
+        print(f"Test Acc:  {test_acc*100:.2f}%")

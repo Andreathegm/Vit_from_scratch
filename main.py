@@ -1,7 +1,7 @@
 from trainsession import TrainSession
-from utils.factories.modelfactory import build_vit_tiny_model
+from utils.factories.modelfactory import build_vit
 from utils.factories.dataloaderfactory import build_dataloaders
-from config.config import load_run_args
+from config.config import load_yaml
 from utils.device import get_device
 import torch
 import torch.nn as nn
@@ -151,27 +151,31 @@ import torch.nn as nn
 #     finish_wandb()
 def main():
     path = "config/run1.yaml"
-    config = load_run_args(path)
+    config = load_yaml(path)
     device = get_device()
-    model = build_vit_tiny_model(config["model"]["img_size"],config["model"]["patch_size"],device)
+    model = build_vit(config=config,device=device)
 
-    optimizer = torch.optim.AdamW(model.parameters(), lr=3e-4, weight_decay=0.1)
-    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=100)
+
+    optimizer = torch.optim.AdamW(model.parameters(),weight_decay=config.training.weight_decay)
+    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=config.training.epochs // 2,eta_min=1e-6)
     criterion = nn.CrossEntropyLoss(label_smoothing=0.1)
     
     session = TrainSession(
         model, optimizer, scheduler, criterion,
         config=config,
-        run_name=config["training"]["run_name"],
-        epochs=config["training"]["epochs"],
+        run_name=config.training.run_name,
+        epochs=config.training.epochs,
         device=device,
-        weights_path=config["training"]["weights_path"]
+        weights_path=config.training.weights_path
         )
     print(session)
-    return
-    session.load_optimizer_state(weights_path=["training"]["weights_path"], new_lr=3e-4)
-    train_loader,val_loader,test_loader = build_dataloaders(config["model"]["img_size"],config["model"]["img_size"])
+    session.load_optimizer_state(config.training.weights_path, new_lr = config.training.lr)
+    print(session)
+    train_loader,val_loader,test_loader = build_dataloaders(config.model.img_size,config.training.batch_size)
     print(train_loader,val_loader,test_loader)
+    return
+    session.test_checkpoint(test_loader=test_loader)
+    return
     session.train_and_test(train_loader=train_loader, val_loader=val_loader,test_loader=test_loader)
 
 if __name__ == "__main__":
