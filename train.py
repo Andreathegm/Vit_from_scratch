@@ -45,4 +45,9 @@ def evaluate(model, loader, criterion,device,split = ""):
 
 def accuracy(logits, targets) -> float:
     preds = logits.argmax(dim=1)
+
+    # targets può essere (B,) interi o (B, num_classes) soft
+    if targets.dim() == 2:
+        targets = targets.argmax(dim=1)  # prendi classe con peso maggiore
+
     return (preds == targets).float().mean().item()

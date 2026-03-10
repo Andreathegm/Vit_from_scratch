@@ -1,4 +1,5 @@
 from trainsession import TrainSession
+from runs import run_evaluate_train_accuracy,run_run2
 from utils.factories.modelfactory import build_vit
 from utils.factories.dataloaderfactory import build_dataloaders
 from config.config import load_yaml
@@ -150,6 +151,10 @@ import torch.nn as nn
 #     log_test(test_acc, test_loss)
 #     finish_wandb()
 def main():
+    run_run2()
+    return
+    run_evaluate_train_accuracy()
+    return
     path = "config/run1.yaml"
     config = load_yaml(path)
     device = get_device()
