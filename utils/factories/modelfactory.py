@@ -1,7 +1,7 @@
 import torch
 from models.vit import VisionTransformer
 
-def build_vit(config , device: torch.device):
+def build_vit(config , device: torch.device,echo=False):
     """
     Costruisce ViT-Tiny — versione ridotta di ViT-Base
     adatta per training from scratch su dataset medio-piccoli.
@@ -28,8 +28,9 @@ def build_vit(config , device: torch.device):
 
     # conta e stampa i parametri — utile per verificare che il modello
     # sia quello atteso prima di iniziare un training lungo
-    print(model)
-    total_params = sum(p.numel() for p in model.parameters())
-    print(f"Total parameters: {total_params / 1e6:.2f}M")
+    if echo:
+      print(model)
+      total_params = sum(p.numel() for p in model.parameters())
+      print(f"Total parameters: {total_params / 1e6:.2f}M")
 
     return model

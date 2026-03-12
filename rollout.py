@@ -106,8 +106,8 @@ def plot_attention_grid(results: list, save_path: str = "plots/attention_grid.pn
     plt.savefig(save_path, dpi=150, bbox_inches="tight")
     plt.show()
 
-yaml_path = "config/run2.yaml"
-weights = "checkpoints/vit-fine-tune-mixup/best.pt"
+yaml_path = "config/run3finetuneofmixup.yaml"
+weights = "checkpoints/vit-fine-tune-mixup-run3/best.pt"
 config = load_yaml(yaml_path)
 device = get_device()
 model = build_vit(config=config,device=device)
@@ -121,6 +121,6 @@ for i in range (8):
     img_path = random_element_from_subfolders(img_path_root,seed+i)
     img_np,mask,img_masked = visualize_attention_rollout(model,img_path,device)
     imgs_results.append((img_np,mask,img_masked))
-plot_attention_grid(imgs_results)
+plot_attention_grid(imgs_results,"plots/attention_grid1.png")
 
 

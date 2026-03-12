@@ -1,4 +1,4 @@
-data/
+dataset/
 .vscode*
 __*__
 test.py

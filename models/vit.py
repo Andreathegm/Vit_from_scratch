@@ -1,8 +1,8 @@
 import torch
 import torch.nn as nn
 from models.patch_embedding import PatchEmbedding
-from models.TrasformerEncoder import TrasformerEncoderBlock
-from models.MLP import MLPHead
+from models.trasformerencoder import TrasformerEncoderBlock
+from models.mlp import MLPHead
 
 
 class VisionTransformer(nn.Module):

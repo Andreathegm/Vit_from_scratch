@@ -144,7 +144,7 @@ class TrainSession:
             print("no weights loaded")
         print(f"Weights loaded from {path}")
 
-    def load_optimizer_state(self, path: str, new_lr: float = None):
+    def load_optimizer_state(self, path: str, new_lr: float = None,no_wd_load=False):
         """
         Loads optimizer state dict from a checkpoint — preserves m and v moments.
         Optionally overrides lr after loading, keeping the accumulated moments.
@@ -161,6 +161,8 @@ class TrainSession:
             for group in self.optimizer.param_groups:
                 old_lr = group["lr"]
                 group["lr"] = new_lr
+                if no_wd_load is True :
+                    group["weight_decay"] = self.config.training.weight_decay
             print(f"Optimizer state loaded — old_lr = {old_lr} overridden to {new_lr}")
         else:
             print("Optimizer state loaded — lr unchanged")

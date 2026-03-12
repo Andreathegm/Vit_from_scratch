@@ -3,12 +3,7 @@ import os
 
 
 def fetch_run_history(run_path: str, save_csv: bool = True):
-    """
-    Scarica la history completa di un run da wandb.
-
-    run_path: "username/project/run_id"
-              lo trovi su wandb.ai → run → Overview → Run path
-    """
+   
     api = wandb.Api()
     run = api.run(run_path)
 

@@ -1,5 +1,5 @@
 from trainsession import TrainSession
-from runs import run_evaluate_train_accuracy,run_run2
+from runs import run_evaluate_train_accuracy,run_run2,run_evaluate_test_top_k,run_run3
 from utils.factories.modelfactory import build_vit
 from utils.factories.dataloaderfactory import build_dataloaders
 from config.config import load_yaml
@@ -151,7 +151,14 @@ import torch.nn as nn
 #     log_test(test_acc, test_loss)
 #     finish_wandb()
 def main():
-    run_run2()
+    run_evaluate_train_accuracy()
+    return
+    run_run3()
+    return
+    run_evaluate_test_top_k(5)
+    return
+    for i in range(8):
+        run_evaluate_test_top_k(i+2)
     return
     run_evaluate_train_accuracy()
     return
