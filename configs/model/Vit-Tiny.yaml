@@ -1,0 +1,11 @@
+name: "ViT-Tiny"
+img_size: 224     
+patch_size: 16 
+num_classes: 100
+in_chans : 3
+embed_dim: 192
+depth: 12
+num_heads: 3
+mlp_ratio: 4.0
+dropout: 0.15 
+attn_dropout : 0.1  

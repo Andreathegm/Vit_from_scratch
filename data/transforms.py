@@ -29,10 +29,11 @@ _TRANSFORM_DISPATCHER = {
     "train": _get_train_transforms,
     "val": _get_eval_transforms,
     "test": _get_eval_transforms,
-    "train.eval" : _get_eval_transforms
+    "train.eval" : _get_eval_transforms,
+    "def" : _get_eval_transforms
 }
 
-def get_transforms(img_size: int, trasform_name: str):
+def get_transforms(img_size: int, trasform_name: str = "def"):
     if trasform_name not in _TRANSFORM_DISPATCHER:
         raise ValueError(f"Trasform {trasform_name} is not available"
                          f"Traformations available : {list(_TRANSFORM_DISPATCHER.keys())}")

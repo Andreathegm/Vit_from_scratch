@@ -1,11 +1,11 @@
-from trainsession import TrainSession
-from runs import run_evaluate_train_accuracy,run_run2,run_evaluate_test_top_k,run_run3
-from utils.factories.modelfactory import build_vit
-from utils.factories.dataloaderfactory import build_dataloaders
-from config.config import load_yaml
-from utils.device import get_device
-import torch
-import torch.nn as nn
+# from trainsession import TrainSession
+# from runs import run_evaluate_train_accuracy,run_run2,run_evaluate_test_top_k,run_run3
+# from utils.factories.modelfactory import build_vit
+# from utils.factories.dataloaderfactory import build_dataloaders
+# from utils.device import get_device
+# import torch
+# import torch.nn as nn
+from utils import build_vit_tiny224_16
 
 
 
@@ -151,6 +151,8 @@ import torch.nn as nn
 #     log_test(test_acc, test_loss)
 #     finish_wandb()
 def main():
+    build_vit_tiny224_16(echo=True)
+    return
     run_evaluate_train_accuracy()
     return
     run_run3()

@@ -64,15 +64,15 @@ class TrainSession:
             f"  parameters:      {total_params:.2f}M\n"
             f"\n"
             f"  optimizer:       {self.optimizer.__class__.__name__}\n"
-            f"  lr:              {current_lr:.2e}\n"
-            f"  weight decay:    {weight_decay}\n"
+            f"      lr:              {current_lr:.2e}\n"
+            f"      weight decay:    {weight_decay}\n"
             f"\n"
             f"  scheduler:       {self.scheduler.__class__.__name__}\n"
             f"  criterion:       {self.criterion.__class__.__name__}\n"
             f"\n"
-            f"  checkpoint last: {self.checkpoint_last}\n"
-            f"  checkpoint best: {self.checkpoint_best}\n"
-            f"  weights from {w_path}"
+            f"  When training last checkpoint will be in : {self.checkpoint_last}\n"
+            f"  When training best checkpoint will be in : {self.checkpoint_best}\n"
+            f"  weights loaded from {w_path}"
         )
 
 

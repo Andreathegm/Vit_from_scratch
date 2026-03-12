@@ -1,6 +1,7 @@
 import torch
 import numpy as np 
 from PIL import Image
+from data.transforms import get_transforms,IMAGENET_MEAN,IMAGENET_STD
 
 def attention_rollout(attn_maps: list, patch_size: int = 16, img_size: int = 224):
     
@@ -24,18 +25,12 @@ def attention_rollout(attn_maps: list, patch_size: int = 16, img_size: int = 224
     
     return mask
 
-def visualize_attention_rollout(model, image_path: str, device, patch_size: int = 16, img_size: int = 224):
+def get_imgs_attention_rollout(model, image_path: str, device, patch_size: int = 16, img_size: int = 224):
     
-    mean = torch.tensor([0.485, 0.456, 0.406]).view(3, 1, 1)
-    std  = torch.tensor([0.229, 0.224, 0.225]).view(3, 1, 1)
+    mean = torch.tensor(IMAGENET_MEAN).view(3, 1, 1)
+    std  = torch.tensor(IMAGENET_STD).view(3, 1, 1)
 
-    transform = T.Compose([
-        T.Resize(int(img_size * (240 / 224))),
-        T.CenterCrop(img_size),
-        T.ToTensor(),
-        T.Normalize([0.485, 0.456, 0.406],
-                    [0.229, 0.224, 0.225])
-    ])
+    transform = get_transforms(img_size)
 
     img_pil    = Image.open(image_path).convert("RGB")
     img_tensor = transform(img_pil).unsqueeze(0).to(device)

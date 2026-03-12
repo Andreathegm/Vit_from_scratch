@@ -11,7 +11,7 @@ def _load(file_name):
         raise RuntimeError(f"Impossible to load the conf. file {e}")
 
 # instantiate a global variable
-Hyperparams = _load("config/hyperparameters.yaml")
+Hyperparams = _load("configs/hyperparameters.yaml")
 
 def load_yaml(file_name):
     return _load(file_name)

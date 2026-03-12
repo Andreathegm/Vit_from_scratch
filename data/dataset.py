@@ -161,7 +161,7 @@ class MixUpCutMixDataset(Dataset):
             t[label] = 1.0
             return t
     
-    raise TypeError("Label must be either an integer or a 1D tensor")
+        raise TypeError("Label must be either an integer or a 1D tensor")
 
 
     def _mixup(self, img1: torch.Tensor, img2: torch.Tensor):
