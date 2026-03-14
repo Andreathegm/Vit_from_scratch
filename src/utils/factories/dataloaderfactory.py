@@ -4,7 +4,7 @@ from data.transforms import get_transforms
 
 def build_dataloaders(img_size: int, batch_size: int,train_val_ratio=0.1):
 
-    raw_ds = ImageDataset("data/imagenet-100/train")
+    raw_ds = ImageDataset("dataset/imagenet-100/train")
 
     train_subset, val_subset = raw_ds.split(val_ratio=train_val_ratio)
 
@@ -20,7 +20,7 @@ def build_dataloaders(img_size: int, batch_size: int,train_val_ratio=0.1):
     )
 
     test_ds = ImageDataset(
-        "data/imagenet-100/val.X",
+        "dataset/imagenet-100/val.X",
         transform=get_transforms(img_size, "test")
     )
 
@@ -56,7 +56,7 @@ def build_dataloaders(img_size: int, batch_size: int,train_val_ratio=0.1):
 
 def build_train_eval_loader(img_size: int, batch_size: int):
    
-    raw_ds = ImageDataset("data/imagenet-100/train")
+    raw_ds = ImageDataset("dataset/imagenet-100/train")
 
     train_subset, _ = raw_ds.split(val_ratio=0.1)
 
@@ -80,7 +80,7 @@ def build_train_eval_loader(img_size: int, batch_size: int):
 
 def build_data_loaders_mixup(img_size: int, batch_size: int):
 
-    raw_ds = ImageDataset("data/imagenet-100/train")
+    raw_ds = ImageDataset("dataset/imagenet-100/train")
 
     train_subset, val_subset = raw_ds.split(val_ratio=0.1)
 
@@ -109,7 +109,7 @@ def build_data_loaders_mixup(img_size: int, batch_size: int):
     # test set — dataset separato, nessuno split necessario
     # la transform viene passata direttamente nel costruttore
     test_ds = ImageDataset(
-        "data/imagenet-100/val.X",
+        "dataset/imagenet-100/val.X",
         transform=get_transforms(img_size, "test")
     )
 
@@ -140,3 +140,12 @@ def build_data_loaders_mixup(img_size: int, batch_size: int):
     )
 
     return train_loader, val_loader, test_loader
+
+def build_default_loaders(img_size,batch_size,split:str):
+    match(split):
+        case "test_training_set":
+            return build_train_eval_loader(img_size,batch_size)
+        case "test_test_set":
+                _,_,test_dl = build_dataloaders(img_size=img_size,batch_size=batch_size)
+                return test_dl
+

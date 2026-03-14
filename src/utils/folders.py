@@ -12,7 +12,7 @@ def random_element_from_subfolders(folder_path: str,seed =None):
     ]
 
     if not subfolders:
-        raise ValueError("folder not contains subfolders")
+        raise ValueError(f"folder {folder_path} not contains subfolders")
 
     chosen_subfolder = random.choice(subfolders)
 

@@ -3,8 +3,8 @@ import torch
 from tqdm import tqdm
 from time import time
 
-from train import train_one_epoch, evaluate
-from utils.wandb_logger import log_epoch, log_best, log_test, init_wandb, finish_wandb
+from .train import train_one_epoch, evaluate
+from  src.utils.wandb_logger import log_epoch, log_best, log_test, init_wandb, finish_wandb
 
 
 class TrainSession:

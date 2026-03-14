@@ -6,3 +6,4 @@ test.py
 wandb/*
 checkpoints/*
 plots/*
+0trash_bin/*

@@ -11,7 +11,7 @@ class TransformDataset(Dataset):
     to two different subdatasets obtained from one ImageFolder obj(namely train and validation sets).
     """
     def __init__(self, subset: Subset, transform, classes):
-        if subset.trasform is not None:
+        if subset.dataset.transform is not None:
             raise RuntimeError(f"Subset {subset} must not have any trasformation")
         self.subset = subset
         self.transform = transform

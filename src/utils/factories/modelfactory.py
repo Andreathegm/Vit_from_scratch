@@ -1,6 +1,6 @@
 from src import load_yaml
-from utils.device import get_device
-from models import VisionTransformer
+from src.utils.device import get_device
+from src.models import VisionTransformer
 
 def build_vit(config ,echo=False):
 
@@ -39,7 +39,16 @@ def build_vit_tiny224_16(echo=False):
   """
   yaml_path = "configs/model/Vit-Tiny.yaml"
   config = load_yaml(yaml_path)
-  build_vit(config,echo)
+  return build_vit(config,echo)
 
 def build_vit_base224_16(echo=False):
    pass
+
+def build_vit_from_defaults(model :str):
+   match(model):
+      case "ViT-Tiny":
+         return build_vit_tiny224_16()
+      case "ViT-B":
+         return build_vit_base224_16()
+
+   

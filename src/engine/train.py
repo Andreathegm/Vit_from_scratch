@@ -1,5 +1,5 @@
 import torch
-from utils import accuracy,accuracy_topk
+from src.utils.metrics import accuracy,accuracy_topk
 
 def train_one_epoch(model , loader , optimizer, criterion, epoch: int, device) -> float:
     model.train()
@@ -23,7 +23,7 @@ def train_one_epoch(model , loader , optimizer, criterion, epoch: int, device) -
     return running_loss / len(loader)
 
 @torch.inference_mode()
-def evaluate(model, loader, criterion,device,split = ""):
+def evaluate(model, loader, criterion,device,split = "",k = 1):
     model.eval()
     total_loss = 0.0
     total_acc = 0.0
@@ -66,3 +66,10 @@ def evaluate_top_k(model, loader, criterion,device,split = "",k=5):
     print(f"[{split}] Loss: {avg_loss:.4f}  Acc1: {avg_acc*100:.2f}%  Acc{k}: {avg_acc_topk*100:.2f}%")
 
     return avg_loss, avg_acc,avg_acc_topk
+
+def get_default_evaluation_action(evaluation_action):
+    match(evaluation_action):
+        case 1: 
+            return evaluate
+        case _:
+            return evaluate_top_k
