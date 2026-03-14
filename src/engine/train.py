@@ -1,7 +1,8 @@
 import torch
+from torch.amp import autocast
 from src.utils.metrics import accuracy,accuracy_topk
 
-def train_one_epoch(model , loader , optimizer, criterion, epoch: int, device) -> float:
+def train_one_epoch(model , loader , optimizer, criterion, epoch: int, device,scaler = None) -> float:
     model.train()
     running_loss = 0.0
 
@@ -9,11 +10,24 @@ def train_one_epoch(model , loader , optimizer, criterion, epoch: int, device) -
         x = x.to(device, non_blocking=True)
         y = y.to(device, non_blocking=True)
 
-        optimizer.zero_grad(set_to_none=True)  
-        logits = model(x)                     
-        loss = criterion(logits, y)            
-        loss.backward()                       
-        optimizer.step()                       
+        optimizer.zero_grad(set_to_none=True)
+
+        if scaler is not None:
+            with autocast(device_type="cuda"):
+                logits = model(x)
+                loss = criterion(logits,y)
+            scaler.scale(loss).backward()
+            scaler.unscale_(optimizer)
+            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
+            scaler.step(optimizer)
+            scaler.update()
+
+        else:
+            logits = model(x)                     
+            loss = criterion(logits, y)            
+            loss.backward()
+            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
+            optimizer.step()                       
 
         running_loss += loss.item()
 

@@ -29,7 +29,18 @@ def build_cosineannealingLR(optimizer,epochs,eta_min):
         eta_min=eta_min  
     )
 
-def get_default_schedulers(optimezer,epochs,scheduler:str):
+def build_reduce_on_plateau_scheduler(optimizer, patience, factor: float = 0.5, min_lr: float = 1e-6):
+    """ReduceLROnPlateau — decreases lr when val_acc stops improving."""
+    return torch.optim.lr_scheduler.ReduceLROnPlateau(
+        optimizer,
+        mode="max",
+        factor=factor,
+        patience=patience,
+        min_lr=min_lr
+    )
+def get_default_schedulers(optimezer,scheduler:str):
     match(scheduler.name):
         case "cosine":
-            build_cosineannealingLR(optimezer,epochs,scheduler.eta_min)
+            return build_cosineannealingLR(optimezer,scheduler.epochs,scheduler.eta_min)
+        case "ReduceLROnPlateau":
+            return build_reduce_on_plateau_scheduler(optimizer=optimezer,patience=scheduler.patience,min_lr=scheduler.min_lr,factor=scheduler.factor)

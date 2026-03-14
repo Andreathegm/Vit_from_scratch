@@ -2,8 +2,9 @@ import os
 import torch
 from tqdm import tqdm
 from time import time
-
+from torch.amp.grad_scaler import GradScaler
 from .train import train_one_epoch, evaluate
+from .early_stopping import EarlyStopping
 from  src.utils.wandb_logger import log_epoch, log_best, log_test, init_wandb, finish_wandb
 
 
@@ -35,6 +36,10 @@ class TrainSession:
         self.device          = device
         self.checkpoint_last = f"checkpoints/{self.run_name}/last.pt"
         self.checkpoint_best = f"checkpoints/{self.run_name}/best.pt"
+
+        self.early_stopping = EarlyStopping(config.early_stopping.patience) if config.early_stopping is not None else None
+        precision = getattr(config.training, "precision", "fp32")
+        self.scaler = GradScaler() if precision == "fp16" else None
 
         if weights_path is not None:
             self.load_weights(weights_path)
@@ -191,13 +196,15 @@ class TrainSession:
         for epoch in epoch_pbar:
             train_loss = train_one_epoch(
                 self.model, train_loader, self.optimizer,
-                self.criterion, epoch, self.device
+                self.criterion, epoch, self.device,
+                scaler=self.scaler
             )
             val_loss, val_acc = evaluate(
                 self.model, val_loader, self.criterion,
                 self.device, split="Val"
             )
-            self.scheduler.step()
+            
+            self._scheduler_step(scheduler=self.scheduler,val_acc=val_acc)
 
             current_lr = self.optimizer.param_groups[0]["lr"]
             log_epoch(epoch, train_loss, val_loss, val_acc, current_lr)
@@ -209,6 +216,7 @@ class TrainSession:
 
             if val_acc > best_val_acc:
                 best_val_acc = val_acc
+
                 self.save_checkpoint(
                     epoch, train_loss, val_loss, val_acc,
                     best_val_acc, self.checkpoint_best
@@ -223,8 +231,22 @@ class TrainSession:
                 lr=f"{current_lr:.2e}"
             )
 
+            if self.early_stopping.step(val_acc):
+                self.early_stopping.status()
+                break
+            else:
+                self.early_stopping.status()
+
+
         elapsed = (time() - start) / 60
         print(f"\nTraining completed in {elapsed:.1f} minutes")
+
+
+    def _scheduler_step(self,scheduler,val_acc=None):
+        if isinstance(self.scheduler, torch.optim.lr_scheduler.ReduceLROnPlateau):
+            self.scheduler.step(val_acc)
+        else:
+            self.scheduler.step()
 
     # ──────────────────────────────────────────
     # Public API

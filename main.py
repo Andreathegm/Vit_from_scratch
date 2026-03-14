@@ -49,11 +49,10 @@ def main():
     # ==========================================
     match(args.mode):
         case "train":
-            # optimizer = torch.optim.AdamW(model.parameters(), weight_decay=config.training.weight_decay)
-            optimizer = get_default_optimizers(config.optimizer)
-            # scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=config.training.epochs, eta_min=1e-6)
-            scheduler = get_default_schedulers(config.scheduler)
-            # criterion = nn.CrossEntropyLoss(label_smoothing=0.1)
+            optimizer = get_default_optimizers(model,config.optimizer)
+            print(optimizer)
+            print("cioacioaiocaioiai")
+            scheduler = get_default_schedulers(optimezer=optimizer,scheduler=config.scheduler)
 
             session = TrainSession(
                 model, optimizer, scheduler, criterion,
@@ -64,19 +63,19 @@ def main():
                 weights_path = config.weights_path
             )
             
-            # Carica stato ottimizzatore se necessario (aggiungi la logica nello YAML)
             if config.load_optim_state:
                 session.load_optimizer_state(config.weights_path, new_lr=config.lr)
                 
             print(session)
 
-            # Costruisce i dataloader giusti in base a un parametro nello YAML
-            if getattr(config.training, "use_mixup", False):
+            if config.mixup_cutmix:
                 print("Building mixup-cutmix dataloader")
                 train_loader, val_loader, test_loader = build_data_loaders_mixup(config.model.img_size, config.training.batch_size)
             else:
                 print("Using Standard dataloaders")
                 train_loader, val_loader, test_loader = build_dataloaders(config.model.img_size, config.training.batch_size)
+            
+            return
 
             session.train_and_test(train_loader=train_loader, val_loader=val_loader, test_loader=test_loader)
 
