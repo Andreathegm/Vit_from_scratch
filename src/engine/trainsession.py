@@ -1,3 +1,4 @@
+import json
 import os
 import torch
 from tqdm import tqdm
@@ -38,8 +39,7 @@ class TrainSession:
         self.checkpoint_best = f"checkpoints/{self.run_name}/best.pt"
 
         self.early_stopping = EarlyStopping(config.early_stopping.patience) if config.early_stopping is not None else None
-        precision = getattr(config.training, "precision", "fp32")
-        self.scaler = GradScaler() if precision == "fp16" else None
+        self.scaler = GradScaler() if config.precision == "fp16" else None
 
         if weights_path is not None:
             self.load_weights(weights_path)
@@ -60,7 +60,7 @@ class TrainSession:
         return (
             f"TrainSession\n"
             f"{'─' * 40}\n"
-            f"{self.config.to_dict()}"
+            f"{json.dumps(self.config.to_dict(),indent=4)}\n"
             f"  run name:        {self.run_name}\n"
             f"  epochs:          {self.epochs}\n"
             f"  device:          {self.device}\n"
@@ -77,7 +77,11 @@ class TrainSession:
             f"\n"
             f"  When training last checkpoint will be in : {self.checkpoint_last}\n"
             f"  When training best checkpoint will be in : {self.checkpoint_best}\n"
-            f"  weights loaded from {w_path}"
+            f"  Scaler --> {self.scaler}\n"
+            f"  Early stopping -->\n {self.early_stopping}\n"
+            f"  weights loaded from {w_path}\n"
+            f"{'─' * 40}\n"
+
         )
 
 

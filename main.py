@@ -51,7 +51,6 @@ def main():
         case "train":
             optimizer = get_default_optimizers(model,config.optimizer)
             print(optimizer)
-            print("cioacioaiocaioiai")
             scheduler = get_default_schedulers(optimezer=optimizer,scheduler=config.scheduler)
 
             session = TrainSession(
@@ -70,12 +69,12 @@ def main():
 
             if config.mixup_cutmix:
                 print("Building mixup-cutmix dataloader")
-                train_loader, val_loader, test_loader = build_data_loaders_mixup(config.model.img_size, config.training.batch_size)
+                train_loader, val_loader, test_loader = build_data_loaders_mixup(config.img_size, config.batch_size)
             else:
                 print("Using Standard dataloaders")
-                train_loader, val_loader, test_loader = build_dataloaders(config.model.img_size, config.training.batch_size)
+                train_loader, val_loader, test_loader = build_dataloaders(config.img_size, config.batch_size)
             
-            return
+            
 
             session.train_and_test(train_loader=train_loader, val_loader=val_loader, test_loader=test_loader)
 

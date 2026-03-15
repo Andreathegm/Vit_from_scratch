@@ -1,26 +1,28 @@
 model : ViT-Tiny
 
-
+img_size: 224
 batch_size: 128
 run_name: "vit-run4-mixup-amp"
-epochs: 300
+epochs: 500
 weights_path: "checkpoints/vit-fine-tune-mixup-run3/best.pt"
 load_optim_state: false
 mixup_cutmix: true
 precision: "fp16"
 
 
-early_stopping : F
+early_stopping :
+    patience : 25
+
 optimizer:
     name : "AdamW"
     weight_decay: 0.1
-    lr : !!float 2e-4
+    lr : !!float 1e-4
 
 scheduler:
     name : "ReduceLROnPlateau"
     mode: "max"
     factor: 0.5
-    patience: 25
+    patience: 5
     min_lr: !!float 1e-6
 
 

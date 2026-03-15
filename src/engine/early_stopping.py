@@ -17,5 +17,9 @@ class EarlyStopping:
     
     def status(self):
         print(f"EarlyStopping - Validation Accuracy not increasing since : {self.counter}/{self.patience}")
+    
+    def __str__(self):
+        return f" patience : {self.patience}\n  counter : {self.counter}\n  best val accuracy : {self.best_acc}"
+
 
         
