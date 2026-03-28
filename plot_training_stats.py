@@ -127,34 +127,47 @@ def plot_training_trend(file,title):
     plt.tight_layout()
     plt.savefig("plots/trend.png")
 
+import matplotlib.pyplot as plt
 
-plot_training_trend("csv_results/model_performance.csv","Test Set Accuracy during training")
-exit()
+def plot_class_accuracy(class_acc, title="Accuracy per class"):
+    plt.figure(figsize=(10,5))
+    plt.bar(range(len(class_acc)), class_acc)
+    plt.xlabel("Class index")
+    plt.ylabel("Accuracy")
+    plt.title(title)
+    plt.grid(True, axis='y', alpha=0.3)
+    plt.tight_layout()
+    plt.savefig("class_accuracy.png")
 
-p = "innocentiandrea6-/vit-imagenet100/"
-vit_pretrain0 = "ik3412d8"
-vit_finetune1 = "8staqny1"
-vit_finetune_mix_up2 = "w4t1m77m"
-vit_fine_tune_mix_up3 = "onoy1old"
-vit_fine_tune_early_stopping4 = "96ep10zp"
 
-run_ids = [
-           vit_pretrain0,
-           vit_finetune1,
-           vit_finetune_mix_up2,
-           vit_fine_tune_mix_up3,
-           vit_fine_tune_early_stopping4
-           ]
+# plot_training_trend("csv_results/model_performance.csv","Test Set Accuracy during training")
 
-titles = ["Vit Pretrain",
-          "Vit fine Tune",
-          "Vit fine Tune + MixUp & CutMix",
-          "Vit fine Tune + MixUp & CutMix second try",
-          "Vit fine Tune , early stopping"]
-titles_s = ["".join(title.split(" ")) for title in titles]
-print(titles_s)
 
-RUNS_NAMES = [p + run_id for run_id in run_ids]
+# p = "innocentiandrea6-/vit-imagenet100/"
+# vit_pretrain0 = "ik3412d8"
+# vit_finetune1 = "8staqny1"
+# vit_finetune_mix_up2 = "w4t1m77m"
+# vit_fine_tune_mix_up3 = "onoy1old"
+# vit_fine_tune_early_stopping4 = "96ep10zp"
 
-for i,run_name in enumerate(RUNS_NAMES):
-    plot_run_history(save_path="plots/"+ titles[i] +"/" + run_ids[i] ,run_name= run_name,title=titles[i])
+# run_ids = [
+#            vit_pretrain0,
+#            vit_finetune1,
+#            vit_finetune_mix_up2,
+#            vit_fine_tune_mix_up3,
+#            vit_fine_tune_early_stopping4
+#            ]
+
+# titles = ["Vit Pretrain",
+#           "Vit fine Tune",
+#           "Vit fine Tune + MixUp & CutMix",
+#           "Vit fine Tune + MixUp & CutMix second try",
+#           "Vit fine Tune , early stopping"]
+# titles_s = ["".join(title.split(" ")) for title in titles]
+# print(titles_s)
+
+# RUNS_NAMES = [p + run_id for run_id in run_ids]
+
+# for i,run_name in enumerate(RUNS_NAMES):
+#     plot_run_history(save_path="plots/"+ titles[i] +"/" + run_ids[i] ,run_name= run_name,title=titles[i])
+

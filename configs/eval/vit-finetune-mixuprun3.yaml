@@ -1,10 +1,10 @@
-config_name : vit-fine-tune-mixup
+config_name : vit-fine-tune-mixup-run3
 model : ViT-Tiny
 img_size : 224
 batch_size : 100
 criterion:
   name: CrossEntropyLoss
   label_smoothing : 0.0
-weights_path : checkpoints/vit-fine-tune-mixup/best.pt
+weights_path : checkpoints/vit-fine-tune-mixup-run3/best.pt
 split : test_test_set
 k : 5

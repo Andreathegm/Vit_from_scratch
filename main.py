@@ -3,7 +3,7 @@ import torch
 import torch.nn as nn
 
 from src import load_yaml,get_device,build_vit_from_defaults,get_default_optimizers,get_default_schedulers,TrainSession,build_data_loaders_mixup,build_default_loaders,load_weights_from_complex_checkpoint,get_default_criterions,build_dataloaders,get_default_evaluation_action,append_to_csv
-
+from plot_training_stats import plot_class_accuracy
 
 CHOICES = ["train", "test"]
 
@@ -92,6 +92,7 @@ def main():
             loader = build_default_loaders(config.img_size,config.batch_size, config.split)
             evaluation_action = get_default_evaluation_action(config.k)
             evaluation = evaluation_action(model=model, loader=loader, criterion=criterion, device=device, split=config.split,k=config.k)
+            plot_class_accuracy(evaluation[-1])
             if args.csv : 
                 append_to_csv(args.csv,evaluation[1:],create=True,row_name=config.config_name)     
 
