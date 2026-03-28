@@ -1,13 +1,15 @@
 import os 
 import matplotlib.pyplot as plt
 import pandas as pd
-from utils.wandb_fetcher import fetch_multiple_runs,fetch_run_history
+from src.utils.wandb_fetcher import fetch_multiple_runs,fetch_run_history
+from src.utils.csv_manager import list_from_csv
 
 def plot_single_run(df,save_path,title):
     """
-    Plotta loss, accuracy e lr di un singolo run.
+    Plot loss, accuracy e lr of a single run.
     """
-    os.makedirs("plots", exist_ok=True)
+    os.makedirs("/".join(save_path.split("/")[:-1]), exist_ok=True)
+
 
     fig, axes = plt.subplots(1, 3, figsize=(15, 4))
     fig.suptitle(title, fontsize=14, fontweight="bold")
@@ -56,14 +58,9 @@ def plot_single_run(df,save_path,title):
 
 
 def plot_compare_runs(run_paths: dict, save_path: str = "plots/comparison.png"):
-    """
-    Confronta val_acc e val_loss di più run sullo stesso grafico.
-    Utile per confrontare run1 (ColorJitter) vs run2 (RandAugment puro).
 
-    run_paths: dizionario nome → run_path
-    """
     histories = fetch_multiple_runs(run_paths)
-    os.makedirs("plots", exist_ok=True)
+    os.makedirs("/".join(save_path.split("/")[:-1]), exist_ok=True)
 
     colors = ["steelblue", "tomato", "seagreen", "mediumpurple", "orange"]
     fig, axes = plt.subplots(1, 2, figsize=(12, 4))
@@ -96,30 +93,68 @@ def plot_compare_runs(run_paths: dict, save_path: str = "plots/comparison.png"):
     plt.show()
     print(f"Comparison Saved → {save_path}")
 
-def plot_run_history(path, run_name = None):
-    if not run_name :
-        df = pd.read_csv(path)
+
+def plot_run_history(save_path,title,run_name = None,csv_path=None):
+    if csv_path :
+        df = pd.read_csv(save_path)
     else:
-        RUN = "innocentiandrea6-/vit-imagenet100/ik3412d8"
+        RUN = run_name
         df = fetch_run_history(RUN, save_csv=True)
     
     plot_single_run(
         df=df,
-        save_path="plots/run1.png",
-        title="Vit-tiny on imagenet-100"
+        save_path=save_path,
+        title=title
     )
 
 
-RUN_NAME = "innocentiandrea6-/vit-imagenet100/ik3412d8"
-path = "plots/vit-tiny-200ep_history.csv"
-plot_run_history(path)
+def plot_training_trend(file,title):
+    rows = list_from_csv(file)
+
+    x_labels = [row[0] for row in rows]
+
+    numeric_cols = list(zip(*[list(map(float, row[1:])) for row in rows]))
+
+    plt.figure(figsize=(10, 6))
+
+    for i, col in enumerate(numeric_cols):
+        plt.plot(x_labels, col, marker="o", label=f"Top {4*i+1}")
+
+    plt.title(title)
+    plt.ylabel("Accuracy")
+    plt.legend()
+    plt.grid(True)
+    plt.tight_layout()
+    plt.savefig("plots/trend.png")
 
 
-# # confronto tra run1 e fine-tuning
-# plot_compare_runs(
-#     run_paths={
-#         "Run1 - ColorJitter":     "username/vit-imagenet100/abc123",
-#         "Run2 - Finetune":        "username/vit-imagenet100/def456",
-#     },
-#     save_path="plots/comparison.png"
-# )
+plot_training_trend("csv_results/model_performance.csv","Test Set Accuracy during training")
+exit()
+
+p = "innocentiandrea6-/vit-imagenet100/"
+vit_pretrain0 = "ik3412d8"
+vit_finetune1 = "8staqny1"
+vit_finetune_mix_up2 = "w4t1m77m"
+vit_fine_tune_mix_up3 = "onoy1old"
+vit_fine_tune_early_stopping4 = "96ep10zp"
+
+run_ids = [
+           vit_pretrain0,
+           vit_finetune1,
+           vit_finetune_mix_up2,
+           vit_fine_tune_mix_up3,
+           vit_fine_tune_early_stopping4
+           ]
+
+titles = ["Vit Pretrain",
+          "Vit fine Tune",
+          "Vit fine Tune + MixUp & CutMix",
+          "Vit fine Tune + MixUp & CutMix second try",
+          "Vit fine Tune , early stopping"]
+titles_s = ["".join(title.split(" ")) for title in titles]
+print(titles_s)
+
+RUNS_NAMES = [p + run_id for run_id in run_ids]
+
+for i,run_name in enumerate(RUNS_NAMES):
+    plot_run_history(save_path="plots/"+ titles[i] +"/" + run_ids[i] ,run_name= run_name,title=titles[i])

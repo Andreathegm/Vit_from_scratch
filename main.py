@@ -2,7 +2,7 @@ import argparse
 import torch
 import torch.nn as nn
 
-from src import load_yaml,get_device,build_vit_from_defaults,get_default_optimizers,get_default_schedulers,TrainSession,build_data_loaders_mixup,build_default_loaders,load_weights_from_complex_checkpoint,get_default_criterions,build_dataloaders,get_default_evaluation_action
+from src import load_yaml,get_device,build_vit_from_defaults,get_default_optimizers,get_default_schedulers,TrainSession,build_data_loaders_mixup,build_default_loaders,load_weights_from_complex_checkpoint,get_default_criterions,build_dataloaders,get_default_evaluation_action,append_to_csv
 
 
 CHOICES = ["train", "test"]
@@ -14,7 +14,7 @@ def parse_args():
         "--config", 
         type=str, 
         required=True, 
-        help=".yaml file to use for training"
+        help=".yaml file to use for training or testing"
     )
 
     parser.add_argument(
@@ -23,6 +23,11 @@ def parse_args():
         required=True,
         choices=CHOICES, 
         help="argument necessary to know wheter the model needs to be evaluated or trained"
+    )
+    parser.add_argument(
+        "--csv",
+        type=str,
+        help="argument to specify where values obtained from test are saved (csv) "
     )
     
     return parser.parse_args()
@@ -86,7 +91,9 @@ def main():
             model = load_weights_from_complex_checkpoint(model, weights_path, device, strict=True)
             loader = build_default_loaders(config.img_size,config.batch_size, config.split)
             evaluation_action = get_default_evaluation_action(config.k)
-            evaluation_action(model=model, loader=loader, criterion=criterion, device=device, split=config.split,k=config.k)       
+            evaluation = evaluation_action(model=model, loader=loader, criterion=criterion, device=device, split=config.split,k=config.k)
+            if args.csv : 
+                append_to_csv(args.csv,evaluation[1:],create=True,row_name=config.config_name)     
 
 if __name__ == "__main__":
     main()

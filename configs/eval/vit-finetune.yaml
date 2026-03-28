@@ -1,10 +1,10 @@
+config_name : vit-fine-tune
 model : ViT-Tiny
 img_size : 224
 batch_size : 100
 criterion:
   name: CrossEntropyLoss
   label_smoothing : 0.0
-weights_path : checkpoints/vit-pretrain/best.pt
+weights_path : checkpoints/vit-fine-tune/best.pt
 split : test_test_set
-k : 5 
-
+k : 5

@@ -1,0 +1,11 @@
+config_name : vit-pretrain
+model : ViT-Tiny
+img_size : 224
+batch_size : 100
+criterion:
+  name: CrossEntropyLoss
+  label_smoothing : 0.0
+weights_path : checkpoints/vit-pretrain/best.pt
+split : test_test_set
+k : 5 
+

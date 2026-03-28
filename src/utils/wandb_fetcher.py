@@ -28,4 +28,3 @@ def fetch_multiple_runs(run_paths) -> dict:
         histories[name] = fetch_run_history(path, save_csv=False)
     return histories
 
-
