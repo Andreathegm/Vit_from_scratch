@@ -25,7 +25,7 @@ def plot_attention_grid(results: list, save_path = None,plot_mask=True):
     """
     Args:
         results: list of tuples (img_np, mask, img_masked)
-                 one tuple per image — returned by get_attention_rollout
+                 one tuple per image —
     """
     if plot_mask:
         n_image_per_row = 3

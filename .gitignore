@@ -8,3 +8,4 @@ checkpoints/*
 plots/*
 0trash_bin/*
 csv_results/*
+class_accuracy.npy
