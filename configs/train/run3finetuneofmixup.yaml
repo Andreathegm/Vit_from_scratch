@@ -13,10 +13,10 @@ model:
 training:
   run_name: "vit-fine-tune-mixup-run3"
   epochs: 50
-  lr: !!float 5e-5       # più conservativo con MixUp
+  lr: !!float 5e-5       
   batch_size: 96
-  weight_decay: 0.1      # aumentato — overfitting severo
-  label_smoothing: 0.0   # MixUp produce già label soft — ridondante
+  weight_decay: 0.1      
+  label_smoothing: 0.0  
   scheduler: "cosine"
   augmentation: "upresize&randomcrop+RandAugm+mask+Cutmix-mixup"
   weights_path: "checkpoints/vit-fine-tune-mixup/best.pt"

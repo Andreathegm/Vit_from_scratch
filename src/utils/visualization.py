@@ -37,15 +37,12 @@ def plot_attention_grid(results: list, save_path = None,plot_mask=True):
 
     for i, (img_np, mask, img_masked) in enumerate(results):
         axes[i, 0].imshow(img_np)
-        axes[i, 0].set_title("Original")
         axes[i, 0].axis("off")
 
         axes[i, 1].imshow(mask, cmap="gray")
-        axes[i, 1].set_title("Attention Mask")
         axes[i, 1].axis("off")
 
         axes[i, 2].imshow(img_masked)
-        axes[i, 2].set_title("Attention Map")
         axes[i, 2].axis("off")
 
     plt.tight_layout()

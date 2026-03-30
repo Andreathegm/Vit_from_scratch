@@ -3,6 +3,16 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from src.utils.wandb_fetcher import fetch_multiple_runs,fetch_run_history
 from src.utils.csv_manager import list_from_csv
+import numpy as np
+
+plt.rcParams.update({
+    "font.size": 16,        # font generale
+    "axes.titlesize": 18,   # titolo assi
+    "axes.labelsize": 16,   # label assi
+    "xtick.labelsize": 14,
+    "ytick.labelsize": 14,
+    "legend.fontsize": 14
+})
 
 def plot_single_run(df,save_path,title):
     """
@@ -129,18 +139,32 @@ def plot_training_trend(file,title):
 
 import matplotlib.pyplot as plt
 
-def plot_class_accuracy(class_acc, title="Accuracy per class"):
+def plot_class_accuracy(class_acc,save_path, title="Accuracy per class",ylabel="Accuracy"):
     plt.figure(figsize=(10,5))
     plt.bar(range(len(class_acc)), class_acc)
     plt.xlabel("Class index")
-    plt.ylabel("Accuracy")
+    plt.ylabel(ylabel)
     plt.title(title)
     plt.grid(True, axis='y', alpha=0.3)
     plt.tight_layout()
-    plt.savefig("class_accuracy.png")
+    plt.savefig(save_path)
 
 
-# plot_training_trend("csv_results/model_performance.csv","Test Set Accuracy during training")
+# paths=["class_accuracy.npy","class_accuracy_topk.npy"]
+# save_paths = ["cls_acc.png","cls_acc_topk"]
+# titles = ["Top1 Accuracy","Top5 Accuracy"]
+# accuracys = []
+# for path,save_path,title in zip(paths,save_paths,titles):
+#     accuracy = np.load(path)
+#     accuracys.append(accuracy)
+#     plot_class_accuracy(class_acc=accuracy,save_path=save_path,title=title)
+# diff = accuracys[1] - accuracys[0]
+# sum = accuracys[1] + accuracys[0] 
+# plot_class_accuracy(class_acc=diff,save_path="diff.png",title="",ylabel="Accuracy differnce Top5 - Top1")
+# plot_class_accuracy(class_acc=sum,save_path="sum.png",title="",ylabel="Accuracy sum Top5 + Top1")
+
+
+plot_training_trend("csv_results/model_performance.csv","Test Set Accuracy during training")
 
 
 # p = "innocentiandrea6-/vit-imagenet100/"

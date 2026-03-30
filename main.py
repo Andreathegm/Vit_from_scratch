@@ -93,8 +93,8 @@ def main():
             loader = build_default_loaders(config.img_size,config.batch_size, config.split)
             evaluation_action = get_default_evaluation_action(config.k)
             evaluation = evaluation_action(model=model, loader=loader, criterion=criterion, device=device, split=config.split,k=config.k)
-            plot_class_accuracy(evaluation[-1])
-            np.save("class_accuracy.npy",evaluation[-1])
+            plot_class_accuracy(evaluation[-1],"class_accuracy",save_path="class_accuracy.png")
+            np.save("class_accuracy",evaluation[-1])
             if args.csv : 
                 append_to_csv(args.csv,evaluation[1:],create=True,row_name=config.config_name)     
 

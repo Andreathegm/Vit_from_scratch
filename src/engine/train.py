@@ -89,9 +89,10 @@ def evaluate_top_k_per_class(model, loader, criterion, device, split="", k=5):
     total_acc = 0.0
     total_acck = 0.0
 
-    # --- per classe ---
     correct_per_class = torch.zeros(num_classes, device=device)
+    correct_topk_per_class = torch.zeros(num_classes,device=device)
     total_per_class   = torch.zeros(num_classes, device=device)
+    
 
     for x, y in loader:
         x = x.to(device, non_blocking=True)
@@ -105,20 +106,24 @@ def evaluate_top_k_per_class(model, loader, criterion, device, split="", k=5):
         total_acck += accuracy_topk(logits, y, k)
 
         preds = logits.argmax(dim=1)
+        topk_preds = logits.topk(k, dim=1).indices
+
         for cls in range(num_classes):
             mask = (y == cls)
             total_per_class[cls] += mask.sum()
             correct_per_class[cls] += (preds[mask] == cls).sum()
+            correct_topk_per_class[cls] += (topk_preds[mask] == cls).any(dim=1).sum()
 
     avg_loss = total_loss / len(loader)
     avg_acc  = total_acc  / len(loader)
     avg_acc_topk = total_acck / len(loader)
 
     class_acc = (correct_per_class / total_per_class).cpu().numpy()
+    class_acc_topk = (correct_topk_per_class / total_per_class).cpu().numpy()
 
     print(f"[{split}] Loss: {avg_loss:.4f}  Acc1: {avg_acc*100:.2f}%  Acc{k}: {avg_acc_topk*100:.2f}%")
 
-    return avg_loss, avg_acc, avg_acc_topk, class_acc
+    return avg_loss, avg_acc, avg_acc_topk, class_acc , class_acc_topk
 
 
 
