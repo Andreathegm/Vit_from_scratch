@@ -17,7 +17,6 @@ def parse_args():
         required=True, 
         help=".yaml file to use for training or testing"
     )
-
     parser.add_argument(
         "--mode", 
         type=str,
@@ -29,6 +28,11 @@ def parse_args():
         "--csv",
         type=str,
         help="argument to specify where values obtained from test are saved (csv) "
+    )
+    parser.add_argument(
+        "--vc",
+        action="store_true",
+        help = "argument to validate configuration from the various prints (the script terminates before training/eval starts)"
     )
     
     return parser.parse_args()
@@ -44,6 +48,11 @@ def main():
     print(f"Configuration taken from {args.config}")
 
     model = build_vit_from_defaults(config.model)
+    if config.attn_dropout : 
+        model.att_dropout = config.attn_dropout
+    if config.dropout :
+        model.dropout = config.dropout
+
     print(model)
     criterion = get_default_criterions(config.criterion)
     print(config.criterion.label_smoothing)
@@ -81,8 +90,10 @@ def main():
                 train_loader, val_loader, test_loader = build_dataloaders(config.img_size, config.batch_size)
             
             
-
-            session.train_and_test(train_loader=train_loader, val_loader=val_loader, test_loader=test_loader)
+            if not args.vc : 
+                session.train_and_test(train_loader=train_loader, val_loader=val_loader, test_loader=test_loader)
+            else:
+                print("Validation of configuration train yaml run terminated")
 
         # ==========================================
         # EVALUATION MODE
@@ -92,11 +103,18 @@ def main():
             model = load_weights_from_complex_checkpoint(model, weights_path, device, strict=True)
             loader = build_default_loaders(config.img_size,config.batch_size, config.split)
             evaluation_action = get_default_evaluation_action(config.k)
-            evaluation = evaluation_action(model=model, loader=loader, criterion=criterion, device=device, split=config.split,k=config.k)
-            plot_class_accuracy(evaluation[-1],"class_accuracy",save_path="class_accuracy.png")
-            np.save("class_accuracy",evaluation[-1])
-            if args.csv : 
-                append_to_csv(args.csv,evaluation[1:],create=True,row_name=config.config_name)     
+
+            if not args.vc : 
+                evaluation = evaluation_action(model=model, loader=loader, criterion=criterion, device=device, split=config.split,k=config.k)
+                plot_class_accuracy(evaluation[-1],"class_accuracy",save_path="class_accuracy.png")
+                np.save("class_accuracy",evaluation[-1])
+                if args.csv : 
+
+                    append_to_csv(args.csv,evaluation[1:],create=True,row_name=config.config_name) 
+            else:
+                 
+                 print("Validation of configuration eval yaml run terminated")
+   
 
 if __name__ == "__main__":
     main()

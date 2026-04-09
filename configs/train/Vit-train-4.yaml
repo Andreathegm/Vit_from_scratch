@@ -9,6 +9,8 @@ load_optim_state: false
 mixup_cutmix: true
 precision: "fp16"
 
+attn_dropout : 0.1    
+dropout: 0.15
 
 early_stopping :
     patience : 25

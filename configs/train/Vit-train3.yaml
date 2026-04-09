@@ -1,0 +1,62 @@
+# OLD CONFIGURATION
+# model:
+#   name: "ViT-Tiny"
+#   in_chans: 3
+#   embed_dim: 192
+#   depth: 12
+#   num_heads: 3
+#   mlp_ratio: 4.0
+#   dropout: 0.15
+#   img_size: 224
+#   patch_size: 16
+#   attn_dropout: 0.1
+
+# training:
+#   run_name: "vit-fine-tune-mixup-run3"
+#   epochs: 50
+#   lr: !!float 5e-5       
+#   batch_size: 96
+#   weight_decay: 0.1      
+#   label_smoothing: 0.0  
+#   scheduler: "cosine"
+#   augmentation: "upresize&randomcrop+RandAugm+mask+Cutmix-mixup"
+#   weights_path: "checkpoints/vit-fine-tune-mixup/best.pt"
+
+# dataset:
+#   name: "ImageNet-100"
+#   num_classes: 100
+
+model : ViT-Tiny
+
+img_size: 224
+batch_size: 96
+
+run_name: "Vit-train-3"
+epochs: 50
+
+weights_path: "checkpoints/vit-fine-tune-mixup/best.pt"
+load_optim_state: false
+
+mixup_cutmix: true
+
+precision: "fp32"
+
+
+attn_dropout : 0.1    
+dropout: 0.15
+
+early_stopping : null
+
+optimizer:
+    name : "AdamW"
+    weight_decay: 0.1
+    lr : !!float 5e-5
+
+scheduler:
+    name : "cosine"
+    epochs : 50
+    eta_min: 0
+
+criterion:
+    name : "CrossEntropyLoss"
+    label_smoothing: 0.1

@@ -1,3 +1,4 @@
+# OLD CONFIGURATION
 # Configuration for ViT-Tiny Training
 # model:
 #   name: "ViT-Tiny"
@@ -26,15 +27,16 @@
 #   name: "ImageNet-100"
 #   num_classes: 100
 
+
 model : ViT-Tiny
 
 img_size: 224
 batch_size: 96
 
-run_name: "Vit-pre-train"
+run_name: "Vit-train-1"
 epochs: 100
 
-weights_path: null
+weights_path: "checkpoints/vit-pretrain/best.pt"
 load_optim_state: false
 
 mixup_cutmix: false
@@ -42,23 +44,21 @@ mixup_cutmix: false
 precision: "fp32"
 
 
-attn_dropout : 0.0    
-dropout: 0.1
+attn_dropout : 0.1    
+dropout: 0.15
 
 early_stopping : null
 
 optimizer:
     name : "AdamW"
     weight_decay: 0.05
-    lr : !!float 2e-04
+    lr : !!float 3e-04
 
 scheduler:
-    name : "linear+cosine"
+    name : "cosine_mr"
     epochs : 100
     eta_min: 0
 
 criterion:
     name : "CrossEntropyLoss"
     label_smoothing: 0.1
-
-
