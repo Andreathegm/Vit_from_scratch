@@ -178,6 +178,13 @@ k: 5                     # Top-K for evaluation
 python main.py --config configs/eval/<your_config>.yaml --mode test --csv csv_results/model_performance.csv
 ```
 
+Add `--vc` to validate the configuration without actually running evaluation:
+ 
+```bash
+python main.py --config configs/eval/<your_config>.yaml --mode test --vc
+```
+
+
 This prints Top-1 and Top-5 accuracy, saves per-class accuracy to `class_accuracy.npy`, and plots a bar chart to `class_accuracy.png`. Results are appended to the CSV if `--csv` is provided.
 
 ### Run all evaluations at once

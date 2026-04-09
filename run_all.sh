@@ -5,7 +5,7 @@ set -e
 
 configs=(
     "configs/eval/vit-pretrain.yaml"
-    "configs/eval/vit-fine-tune.yaml"
+    "configs/eval/vit-finetune.yaml"
     "configs/eval/vit-finetune-mixup.yaml"
     "configs/eval/vit-finetune-mixuprun3.yaml"
     "configs/eval/vit-early-stopping.yaml"
