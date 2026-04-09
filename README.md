@@ -22,6 +22,7 @@ A Vision Transformer (ViT-Tiny) trained from scratch on ImageNet-100, implemente
 │   └── attention_rollout.py
 ├── main.py             # Entrypoint — train or test mode
 ├── plot_training_stats.py
+├── requirements.txt
 └── run_all.sh          # Runs all evaluations sequentially
 ```
 
@@ -30,21 +31,19 @@ A Vision Transformer (ViT-Tiny) trained from scratch on ImageNet-100, implemente
 ## Requirements
 
 ```bash
-pip install torch torchvision
-pip install wandb
-pip install scikit-learn
-pip install python-box pyyaml
-pip install numpy matplotlib pandas
+pip install -r requirements.txt
 ```
 
 Python ≥ 3.10 is required (the codebase uses `match/case`).
+Also install torch and torchvsion from the official site choosing what is best suitable for you (GPU is recommended).
+The traing done has been executed in a RTX 2060 (6GB VRAM)
 
 ---
 
 ## Dataset Setup
 
 The project uses **ImageNet-100** (a 100-class subset of ImageNet).
-<link_to_dataset>
+https://www.kaggle.com/datasets/ambityga/imagenet100
 
 Expected folder structure:
 
@@ -58,8 +57,9 @@ dataset/
         ├── n01440764/
         └── ...
 ```
+Originally when downloading the dataset you should be obtaining not just a training folder but 4 training folders.The latter are mutually indipendent (also class-wise) and fairly distributed so we can aggragate all 4 folders into one. 
 
-The train split is further divided internally: 90% training, 10% validation (stratified, seed = 42).
+The train split is further divided : 90% training, 10% validation (stratified, seed = 42).
 
 ---
 
@@ -76,17 +76,15 @@ The train split is further divided internally: 90% training, 10% validation (str
 | Depth | 12 blocks |
 | Attention heads | 3 (head dim = 64) |
 | MLP ratio | 4.0 |
-
-?
 | Dropout | 0.15 |
 | Attention dropout | 0.10 |
-?
-
 | Parameters | ~5.5M |
 
 Architecture config lives in `configs/model/Vit-Tiny.yaml`.
 
 ---
+
+Note : Dropot and Attention dropout can be modified  from yaml config files. 
 
 ## Training
 
@@ -95,33 +93,32 @@ Architecture config lives in `configs/model/Vit-Tiny.yaml`.
 All training runs are driven by YAML config files in `configs/train/`. Key fields:
 
 ```yaml
-model:
-  name: "ViT-Tiny"
-  # ... architecture params
+name: "ViT-Tiny"
+run_name: "my-run"
+epochs: epochs
+lr: lr
+batch_size: batchsize
+weight_decay: weight_decay
+scheduler: "cosine"          # "cosine" | "ReduceLROnPlateau | ... "
+weights_path: null           # path to pretrained checkpoint, or null
 
-training:
-  run_name: "my-run"
-  epochs: 150
-  lr: 1e-4
-  batch_size: 96
-  weight_decay: 0.1
-  scheduler: "cosine"          # "cosine" | "ReduceLROnPlateau"
-  weights_path: null            # path to pretrained checkpoint, or null
+attn_dropout: att_dropout
+dropout : dropout
 
-early_stopping:
-  patience: 25                  # null to disable
+early_stopping:              # null to disable
+  patience: 25                  
 
 optimizer:
   name: "AdamW"
-  weight_decay: 0.1
-  lr: 1e-4
+  weight_decay: weight_decay
+  lr: lr
 
 criterion:
   name: "CrossEntropyLoss"
-  label_smoothing: 0.0
+  label_smoothing: label_smoothing
 
 precision: "fp32"               # "fp16" for AMP
-mixup_cutmix: true
+mixup_cutmix: true              # or false
 ```
 
 ### Run training
@@ -142,16 +139,17 @@ wandb login
 
 ### Training pipeline
 
-The runs build on each other sequentially:
+The runs build on each other sequentially (at least if we see an improvement in validation set accuracy, this was the case):
 
 | Run | Config | Description |
 |-----|--------|-------------|
-| 1 | `run1.yaml` | Fine-tune from pretrained weights, standard augmentation |
-| 2 | `run2.yaml` | Fine-tune with MixUp + CutMix, stronger regularization |
-| 3 | `run3finetuneofmixup.yaml` | Continue from run 2 at lower lr (`5e-5`) for 50 epochs |
-| 4 | `train-vit-amp-mixup.yaml` | Mixed precision (fp16), ReduceLROnPlateau, early stopping |
+| 0 | `Vit-pre-train.yaml` | Train from scratch with standard augmentation |
+| 1 | `Vit-train-1.yaml` | Trained from pre-train weights from step 0 ,differt cosine scheduler |
+| 2 | `Vit-train-2.yaml` | Introduced MixUp + CutMix, stronger regularization|
+| 3 | `Vit-train-3.yaml` | Continue from run 2 at lower lr (`5e-5`) for 50 epochs with higher dropout |
+| 4 | `Vit-train-4.yaml` | Mixed precision (fp16), ReduceLROnPlateau, early stopping |
 
-Each run loads `weights_path` from the previous run's `best.pt`.
+Each run has loaded `weights_path` from the previous run's `best.pt`.
 
 ---
 
@@ -164,8 +162,8 @@ Eval configs live in `configs/eval/`. Required fields:
 ```yaml
 config_name: "my-run-eval"
 model: ViT-Tiny
-img_size: 224
-batch_size: 100
+img_size: img_size
+batch_size: batch_size
 criterion:
   name: CrossEntropyLoss
   label_smoothing: 0.0
@@ -187,8 +185,7 @@ This prints Top-1 and Top-5 accuracy, saves per-class accuracy to `class_accurac
 ```bash
 bash run_all.sh
 ```
-
----
+  Note : This file is a simple for loop that tests the specified eval configurations given .You can easily add more or remove any desired.
 
 ## Augmentation
 
@@ -199,7 +196,7 @@ The training transform pipeline (`data/transforms.py`) applies:
 3. Random horizontal flip
 4. RandAugment (num\_ops=2, magnitude=9)
 5. Normalize (ImageNet mean/std)
-6. Random erasing (p=0.25)
+6. Random erasing (p=0.25) but the area of interest is kept low from a 2% up to 10% of the image
 
 MixUp/CutMix is applied on top via `MixUpCutMixDataset`:
 
@@ -212,32 +209,6 @@ MixUp/CutMix is applied on top via `MixUpCutMixDataset`:
 
 Labels are automatically converted to soft one-hot vectors when MixUp/CutMix is active.
 
----
-
-## Reproducibility
-
-The following seeds and settings are fixed for reproducibility:
-
-- Train/val split: `sklearn.train_test_split` with `random_state=42`
-- DataLoader: `shuffle=True` only for the training set
-
-To fully reproduce a run:
-
-1. Use the YAML config for that run.
-2. Use the same checkpoint as starting point (`weights_path`).
-3. Keep the dataset folder structure identical.
-4. Match the Python, PyTorch, and torchvision versions.
-
-Verified environment:
-
-```
-python      >= 3.10
-torch       (with CUDA support recommended)
-torchvision
-scikit-learn
-```
-
----
 
 ## Checkpoints
 
@@ -256,7 +227,6 @@ Checkpoints are excluded from the repository via `.gitignore`. Each checkpoint f
 }
 ```
 
-Use `load_weights_from_complex_checkpoint` for eval, or `TrainSession.resume()` to continue training.
 
 ---
 

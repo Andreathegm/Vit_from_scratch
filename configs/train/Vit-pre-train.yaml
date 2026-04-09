@@ -50,7 +50,7 @@ early_stopping : null
 optimizer:
     name : "AdamW"
     weight_decay: 0.05
-    lr : !!float 2e-04
+    lr : !!float 1e-03
 
 scheduler:
     name : "linear+cosine"

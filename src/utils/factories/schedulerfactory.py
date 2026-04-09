@@ -1,6 +1,6 @@
 import torch
 
-def build_Linear_and_CosineANL_scheduler(optimizer, epochs: int, warmup_epochs: int = 5,start_factor=0.01,end_factor=1.0):
+def build_Linear_and_CosineANL_scheduler(optimizer, epochs: int, warmup_epochs: int = 5,start_factor=0.2,end_factor=1.0):
     """
     linear Warmup + CosineAnnealing
     """
@@ -58,3 +58,6 @@ def get_default_schedulers(optimezer,scheduler:str):
         
         case "cosine_mr":
             return build_cosineannealing_with_middle_restart(optimizer=optimezer,epochs=scheduler.epochs)
+
+        case "linear+cosine":
+            return build_Linear_and_CosineANL_scheduler(optimizer=optimezer,epochs=scheduler.epochs)

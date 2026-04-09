@@ -43,7 +43,7 @@ precision: "fp32"
 
 
 attn_dropout : 0.1    
-dropout: 0.15
+dropout: 0.1
 
 early_stopping : null
 

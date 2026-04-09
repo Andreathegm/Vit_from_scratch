@@ -1,0 +1,11 @@
+numpy
+pillow
+matplotlib
+scikit-learn
+scipy
+pandas
+tqdm
+pyyaml
+python-box
+wandb
+kaggle
